@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block css %}
+      <link href="{{ url_for('static', path='style/style.css') }}" rel="stylesheet">
+    {% endblock %}
+    <title>
+        {% block title %}
+            Base
+        {% endblock %}
+    </title>
+
+  </head>
+  <body>
+
+
+    <div class="container">
+
+        {% block body %}
+            Hello base!
+
+        {% endblock %}
+    </div>
+    {% block js %}
+        <script src="{{ url_for('static', path='js/bootstrap.bundle.min.js') }}"></script>
+    {% endblock %}
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}
+  Страница пользователя
+{% endblock %}
+
+{% block body %}
+  {% if user_id %}
+    <h2>You are logged in :)</h2>
+    <div id="menubar">
+      <ul id="menu">
+        <li class="selected"><a href="/blogs/{{ user_id }}">Блоги</a></li>
+        <li><a href="/myblog/{{ user_id }}">Мои блоги</a></li>
+        <li><a href="/user-info/{{ user_id }}">Настройки</a></li>
+        <li><a href="/users-info/{{ user_id }}">Пользователи</a></li>
+      </ul>
+  </div>
+  {% else %}
+    <h2>You are NOT logged in :(</h2>
+    <p>
+        Hello stranger. You are not logged. Please follow the link to
+        <a href="/" class="btn">login</a>!
+    </p>
+  {% endif %}
+
+{% endblock %}

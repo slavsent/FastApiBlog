@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}
+  Страница редактирования блога
+{% endblock %}
+
+{% block body %}
+    {% if errors %}
+      {% for error in errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if user_id %}
+        <h2>You are logged in :)</h2>
+        {% include "top_menu_index.html" %}
+        <div>
+          <p>Сейчас всего у меня блогов - {{ total_count }}, всего лайков - {{ likes_all }}</p>
+
+        </div>
+        <div>
+          <ul>
+          {% for post in posts %}
+            <li>
+                <p>Блог - {{ post['posts'] }}, создан - {{ post['dt_created'] }}
+                    <a href="/myblog/edit/{{user_id}}/{{post.id}}">Редактировать</a>
+                    <a href="/myblog/delete/{{user_id}}/{{post.id}}">Удалить</a>
+                </p>
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <form method="post" action="#" class="form_settings">
+            <p><span>Текст блога: </span><textarea class="contact textarea" rows="8" cols="50" name="post_text">{{ post_text }}</textarea></p>
+            <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="entry_submitted" value="save" /></p>
+        </form>
+        </div>
+    {% else %}
+        <h2>You are NOT logged in :(</h2>
+        <p>
+            Hello stranger. You are not logged. Please follow the link to
+            <a href="/" class="btn">login</a>!
+        </p>
+    {% endif %}
+{% endblock %}

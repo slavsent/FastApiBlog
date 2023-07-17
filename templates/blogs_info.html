@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}
+  Страница всех блогов
+{% endblock %}
+
+{% block body %}
+    {% if user_id %}
+        <h2>You are logged in :)</h2>
+        {% include "top_menu_index.html" %}
+        <div>
+          <p>Сейчас всего блогов - {{ total_count }}, всего лайков - {{ likes_all }}</p>
+
+        </div>
+        <div>
+          <ul>
+          {% for post in posts %}
+            <li>
+                <p>Блог - {{ post['posts'] }}</p>
+                <p>Автор - {{ post['username'] }} создан - {{ post['dt_created'] }}</p>
+                <a href="/likes_true/{{user_id}}/{{post.id}}/">Like</a>   <a href="/likes_false/{{user_id}}/{{post.id}}/">Dislike</a>
+
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+    {% else %}
+        <h2>You are NOT logged in :(</h2>
+        <p>
+            Hello stranger. You are not logged. Please follow the link to
+            <a href="/" class="btn">login</a>!
+        </p>
+    {% endif %}
+{% endblock %}
