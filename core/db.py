@@ -14,17 +14,15 @@ from dotenv import load_dotenv
 local = os.environ.get("LOCAL")
 # testing = os.environ.get("TESTING")
 
-dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.my-env')
+#dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 load_dotenv(dotenv_path)
 
-if local:
-    database_host = 'localhost'
-else:
-    database_host = 'blog_db'
 
+database_host = os.environ.get("DB_HOST", "localhost")
+database_pass = os.environ.get("DB_PASS")
 database_type = os.environ.get('DB_TYPE')
 database_user = os.environ.get('DB_USER')
-database_pass = os.environ.get('DB_PASS')
 database_name = os.environ.get('DB_NAME')
 # database_test = os.environ.get('DB_TEST')
 

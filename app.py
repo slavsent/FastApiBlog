@@ -60,8 +60,11 @@ async def user_top_try(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+        except Exception:
+            user_id = None
     else:
         user_id = None
     context = {
@@ -79,9 +82,13 @@ async def user_info(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        db_user = db.query(Users).filter(Users.id == user_id).first()
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            db_user = db.query(Users).filter(Users.id == user_id).first()
+        except Exception:
+            user_id = None
+            db_user = None
     else:
         user_id = None
         db_user = None
@@ -103,9 +110,13 @@ async def user_info_all(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        db_users = db.query(Users).all()
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            db_users = db.query(Users).all()
+        except Exception:
+            user_id = None
+            db_users = None
     else:
         user_id = None
         db_users = None
@@ -127,10 +138,16 @@ async def blog_info(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        total_count = await post_utils.get_posts_count(db)
-        posts, likes = await post_utils.get_posts(db)
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            total_count = await post_utils.get_posts_count(db)
+            posts, likes = await post_utils.get_posts(db)
+        except Exception:
+            user_id = None
+            total_count = None
+            posts = None
+            likes = None
     else:
         user_id = None
         total_count = None
@@ -159,10 +176,16 @@ async def myblog_info(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        total_count = await post_utils.get_posts_count_my(user_id, db)
-        posts, likes = await post_utils.get_posts_my_front(user_id, db)
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            total_count = await post_utils.get_posts_count_my(user_id, db)
+            posts, likes = await post_utils.get_posts_my_front(user_id, db)
+        except Exception:
+            user_id = None
+            total_count = None
+            posts = None
+            likes = None
     else:
         user_id = None
         total_count = None
@@ -189,10 +212,16 @@ async def create_blog(request: Request, db: Session = Depends(get_db)):
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        total_count = await post_utils.get_posts_count_my(user_id, db)
-        posts, likes = await post_utils.get_posts_my_front(user_id, db)
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            total_count = await post_utils.get_posts_count_my(user_id, db)
+            posts, likes = await post_utils.get_posts_my_front(user_id, db)
+        except Exception:
+            user_id = None
+            total_count = None
+            posts = None
+            likes = None
     else:
         user_id = None
         total_count = None
@@ -219,12 +248,19 @@ async def edit_blog(post_id: str, request: Request, db: Session = Depends(get_db
     except Exception:
         token = None
     if token:
-        user = await user_utils.get_user_by_token_(token, db)
-        user_id = user.id
-        total_count = await post_utils.get_posts_count_my(user_id, db)
-        posts, likes = await post_utils.get_posts_my(user_id, db)
-        post_text = await post_utils.get_post(post_id, db)
-        post_text = post_text.posts
+        try:
+            user = await user_utils.get_user_by_token_(token, db)
+            user_id = user.id
+            total_count = await post_utils.get_posts_count_my(user_id, db)
+            posts, likes = await post_utils.get_posts_my(user_id, db)
+            post_text = await post_utils.get_post(post_id, db)
+            post_text = post_text.posts
+        except Exception:
+            user_id = None
+            total_count = None
+            posts = None
+            likes = None
+            post_text = None
     else:
         user_id = None
         total_count = None
