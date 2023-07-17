@@ -17,7 +17,10 @@ local = os.environ.get("LOCAL")
 dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 load_dotenv(dotenv_path)
 
-database_host = 'localhost'
+if local:
+    database_host = 'localhost'
+else:
+    database_host = 'blog_db'
 
 database_type = os.environ.get('DB_TYPE')
 database_user = os.environ.get('DB_USER')

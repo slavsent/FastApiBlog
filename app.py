@@ -112,7 +112,7 @@ async def user_info_all(request: Request, db: Session = Depends(get_db)):
     context = {
         "user_id": user_id,
         "request": request,
-        "user": db_users,
+        "users": db_users,
     }
     return templates.TemplateResponse(
         "users_info.html", context
@@ -242,6 +242,5 @@ async def edit_blog(post_id: str, request: Request, db: Session = Depends(get_db
     }
     return templates.TemplateResponse(
         "edit_myblog.html",
-        {"request": request, "total_count": total_count, "posts": posts, "likes_all": likes, "user_id": user_id,
-         "post_id": post_id, "post_text": post_text}
+        context
     )
