@@ -24,7 +24,7 @@
           {% for post in posts %}
             <li>
                 <p>Блог - {{ post['posts'] }}, создан - {{ post['dt_created'] }}
-                    <a href="/myblog/edit/{{user_id}}/{{post.id}}">Редактировать</a>
+                    <a href="/myblog/edit/{{post.id}}">Редактировать</a>
                     <a href="/myblog/delete/{{user_id}}/{{post.id}}">Удалить</a>
                 </p>
             </li>

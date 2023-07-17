@@ -1,12 +1,12 @@
 from Schemas.blogs import PostDetailsModel, PostModel, PostLike, PostDetailsModelLike
 from Schemas.users import User
 from utils import blogs as post_utils
+from utils import users as user_utils
 from utils.dependencies import get_current_user, get_current_user_
-from fastapi import APIRouter, Depends, HTTPException, status, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Form, Request
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse, HTMLResponse
 from core.db import get_db
-
 
 router = APIRouter()
 
@@ -105,6 +105,28 @@ async def create_post(posts_text: PostModel, current_user: User = Depends(get_cu
     return post_dict
 
 
+@router.post("/myblog/new/", status_code=201)
+async def create_post_front(request: Request, post_text: str = Form(), db: Session = Depends(get_db)):
+    """
+    создание поста текущим авторизованным пользователем для frontend
+    :param request:
+    :param post_text: текст поста
+    :param db: база данных
+    :return: информация о созданном посте
+    """
+    try:
+        token = request.cookies.get("bearer")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to create post",
+        )
+    user = await user_utils.get_user_by_token_(token, db)
+    user_id = user.id
+    post = await post_utils.create_post_front(post_text, user_id, db)
+    return RedirectResponse(f"/myblog/", status_code=status.HTTP_302_FOUND)
+
+
 @router.put("/api/edit-posts/{user_id}/{post_id}", response_model=PostDetailsModel)
 async def update_post_user(posts_text: PostModel, user_id: str, post_id: str, db: Session = Depends(get_db)):
     """
@@ -166,16 +188,25 @@ async def update_post_user_api(posts_text: PostModel, post_id: str, current_user
     return post_dict
 
 
-@router.post("/myblog/edit/{user_id}/{post_id}/", response_model=PostDetailsModel)
-async def update_post_user_front(user_id: str, post_id: str, post_text: str = Form(), db: Session = Depends(get_db)):
+@router.post("/myblog/edit/{post_id}/", response_model=PostDetailsModel)
+async def update_post_user_front(request: Request, post_id: str, post_text: str = Form(),
+                                 db: Session = Depends(get_db)):
     """
     редактирование поста для frontend
-    :param user_id: id пользователя
+    :param request:
+    :param current_user: пользователm
     :param post_id: id поста
     :param post_text: новый текст поста
     :param db: БД
     :return: информация о отредактированном посте
     """
+    try:
+        token = request.cookies.get("bearer")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to create post",
+        )
     post_try = await post_utils.get_post_front(post_id, db)
     # проверка, что пост есть
     if not post_try:
@@ -184,14 +215,15 @@ async def update_post_user_front(user_id: str, post_id: str, post_text: str = Fo
             detail="This isn't post",
         )
     # проверка, что пользователь не редактировал чужие посты
-    if str(post_try.user_id) != user_id:
+    user = await user_utils.get_user_by_token_(token, db)
+    if post_try.user_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to modify this post",
         )
 
     await post_utils.update_post_front(post_id, post_text, db)
-    return RedirectResponse(f"/myblog/{user_id}", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(f"/myblog/", status_code=status.HTTP_302_FOUND)
 
 
 @router.post('/api/like/{post_id}', status_code=201)
@@ -292,7 +324,7 @@ async def create_post_likes_user_front_true(user_id: str, post_id: str, db: Sess
         )
     like = True
     data = await post_utils.create_post_like_front(post_id, user_id, like, db)
-    return RedirectResponse(f"/blogs/{user_id}", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(f"/blogs/", status_code=status.HTTP_302_FOUND)
 
 
 @router.get("/likes_false/{user_id}/{post_id}/")
@@ -326,7 +358,7 @@ async def create_post_likes_user_front(user_id: str, post_id: str, db: Session =
         )
     like = False
     data = await post_utils.create_post_like_front(post_id, user_id, like, db)
-    return RedirectResponse(f"/blogs/{user_id}", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(f"/blogs/", status_code=status.HTTP_302_FOUND)
 
 
 @router.delete("/api/del-posts/{post_id}", status_code=status.HTTP_200_OK)
@@ -409,7 +441,7 @@ async def delete_post_user_front(
             detail="You don't delete this post",
         )
     data = await post_utils.delete_post(post_id, db)
-    return RedirectResponse(f"/myblog/{user_id}", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(f"/myblog/", status_code=status.HTTP_302_FOUND)
 
 
 @router.post("/myblog/new/{user_id}/")
