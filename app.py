@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, UploadFile, File
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 from core.db import engine, get_db
 from modeling import models
-from routers import users, blogs
+from routers import users, blogs, finans
 from sqlalchemy.orm import Session
 from modeling.models import Users
 from utils import blogs as post_utils
@@ -26,6 +26,7 @@ templates = Jinja2Templates(directory="templates")
 
 app.include_router(users.router, tags=['Users'])
 app.include_router(blogs.router, tags=['Blogs'])
+app.include_router(finans.router, tags=['Finans'])
 
 
 @app.get("/api/my_blog")
@@ -280,3 +281,20 @@ async def edit_blog(post_id: str, request: Request, db: Session = Depends(get_db
         "edit_myblog.html",
         context
     )
+
+
+@app.get("/auth/logout", response_class=HTMLResponse)
+def login_get():
+    """ Удаление токена из cookie при выходе - пока не используется """
+    response = RedirectResponse(url="/")
+    response.delete_cookie("bearer")
+    return response
+
+
+@app.on_event("shutdown")
+async def shutdown(response: Response):
+    """ Удаление токена из cookie при завершении - пока не используется """
+    try:
+        response.delete_cookie("bearer")
+    except:
+        pass

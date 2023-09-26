@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 local = os.environ.get("LOCAL")
 # testing = os.environ.get("TESTING")
 
-dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.my-env')
-#dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+#dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.my-env')
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 load_dotenv(dotenv_path)
 
 
